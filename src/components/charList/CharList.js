@@ -1,4 +1,5 @@
 import {Component} from 'react';
+import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import MarvelService from '../../services/MarvelService';
@@ -57,8 +58,21 @@ class CharList extends Component {
         });
     }
 
+    charactersCardsRefs = [];
+
+    addCharacterCardRef = (characterCardRef) => {
+        this.charactersCardsRefs.push(characterCardRef);
+    }
+
+    changeActiveCharacterCard = (characterCardIndex) => {
+        this.charactersCardsRefs.forEach(characterCard => {
+            characterCard.classList.remove('char__item_selected');
+        });
+        this.charactersCardsRefs[characterCardIndex].classList.add('char__item_selected');
+    }
+
     renderCharacters(arr) {
-        const characters =  arr.map((char) => {
+        const characters =  arr.map((char, charIndex) => {
             let imgStyle = {'objectFit' : 'cover'};
             if (char.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 imgStyle = {'objectFit' : 'unset'};
@@ -68,7 +82,11 @@ class CharList extends Component {
                 <li 
                     className="char__item"
                     key={char.id}
-                    onClick={() => this.props.onCharacterSelected(char.id)}>
+                    ref={this.addCharacterCardRef}
+                    onClick={() => {
+                        this.props.onCharacterSelected(char.id);
+                        this.changeActiveCharacterCard(charIndex);
+                    }}>
                         <img src={char.thumbnail} alt={char.name} style={imgStyle}/>
                         <div className="char__name">{char.name}</div>
                 </li>
@@ -108,5 +126,9 @@ class CharList extends Component {
         )
     }
 }
+
+CharList.propTypes = {
+    onCharacterSelected: PropTypes.func.isRequired
+};
 
 export default CharList;
