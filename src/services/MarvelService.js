@@ -3,17 +3,17 @@ import { useHttp } from "../hooks.js/http.hook";
 const useMarvelService = () => {
     const {loading, error, request, clearError} = useHttp();
 
-    const _apiBase = 'https://gateway.marvel.com:443';
-    const _apiKey = '5b384501e48304843a7e8a1c83146bf3';
+    const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
+    const _apiKey = 'apikey=5b384501e48304843a7e8a1c83146bf3';
     const _baseOffset = 210;
 
     const getAllCharacters = async (offset = _baseOffset) => {
-        const res = await request(`${_apiBase}/v1/public/characters?limit=9&offset=${offset}&apikey=${_apiKey}`);
+        const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`);
         return res.data.results.map(_transformCharacter);
     }
 
     const getCharacter = async (id) => {
-        const res = await request(`${_apiBase}/v1/public/characters/${id}?apikey=${_apiKey}`);
+        const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
         return _transformCharacter(res.data.results[0]);
     }
 
@@ -30,19 +30,40 @@ const useMarvelService = () => {
     }
 
     const getAllComics = async (offset = _baseOffset) => {
-        const res = await request(`${_apiBase}/v1/public/comics?limit=8&offset=${offset}&apikey=${_apiKey}`);
+        const res = await request(`${_apiBase}comics?limit=8&offset=${offset}&${_apiKey}`);
         return res.data.results.map(_transformComic);
     }
 
-    const _transformComic = (comicInfo) => {
+    const getComic = async (comicId) => {
+		const res = await request(`${_apiBase}comics/${comicId}?${_apiKey}`);
+		return _transformComic(res.data.results[0]);
+	};
+
+    const _transformComic = (comicData) => {
         return {
-            title: comicInfo.title,
-            price: comicInfo.prices[0].price,
-            thumbnail: comicInfo.thumbnail.path + '.' + comicInfo.thumbnail.extension
+			id: comicData.id,
+			title: comicData.title,
+			description: comicData.description || "There is no description",
+			pageCount: comicData.pageCount
+				? `${comicData.pageCount} p.`
+				: "No information about the number of pages",
+			thumbnail: comicData.thumbnail.path + "." + comicData.thumbnail.extension,
+			language: comicData.textObjects[0]?.language || "en-us",
+			price: comicData.prices[0].price
+				? `${comicData.prices[0].price}$`
+				: "not available"
         }
     }
 
-    return {loading, error, clearError, getAllCharacters, getCharacter, getAllComics};
+    return {
+        loading,
+        error,
+        clearError,
+        getAllCharacters,
+        getCharacter,
+        getAllComics,
+        getComic
+    };
 }
 
 export default useMarvelService;

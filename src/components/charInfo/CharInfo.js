@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom/cjs/react-router-dom';
 import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -58,10 +59,11 @@ const View = ({characterInfo}) => {
             break;
         }
         let comicInfo = (
-            <li className="char__comics-item"
-                key={i}>
+            <Link className="char__comics-item"
+                key={i}
+                to={'/comics/' + comics[i].resourceURI.slice(-5)}>
                 {comics[i].name}
-            </li>
+            </Link>
         );
         comicsArr.push(comicInfo);
     }
