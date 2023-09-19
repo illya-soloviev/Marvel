@@ -3,6 +3,7 @@ import {Link} from "react-router-dom/cjs/react-router-dom";
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import './comicsList.scss';
 
@@ -38,29 +39,32 @@ const ComicsList = () => {
     }
 
     const renderComics = (comicsArr) => {
-        const comics = comicsArr.map((comicInfo, comicIndex) => {
+        const comics = comicsArr.map((comicInfo) => {
             let imgStyle = {'objectFit' : 'cover'};
             if (comicInfo.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
                 imgStyle = {'objectFit' : 'unset'};
             }
 
             return (
-                <li className="comics__item"
-                    key={comicIndex}>
-                    <Link to={`/comics/${comicInfo.id}`}>
-                        <img src={comicInfo.thumbnail} alt="comic"
-                             className="comics__item-img"
-                             style={imgStyle}/>
-                        <div className="comics__item-name">{comicInfo.title}</div>
-                        <div className="comics__item-price">{comicInfo.price}$</div>
-                    </Link>
-                </li>
+                <CSSTransition key={comicInfo.id} timeout={500} classNames={'comics__item'}>
+                    <li className="comics__item">
+                        <Link to={`/comics/${comicInfo.id}`}>
+                            <img src={comicInfo.thumbnail} alt="comic"
+                                className="comics__item-img"
+                                style={imgStyle}/>
+                            <div className="comics__item-name">{comicInfo.title}</div>
+                            <div className="comics__item-price">{comicInfo.price}$</div>
+                        </Link>
+                    </li>
+                </CSSTransition>
             );
         });
 
         return (
             <ul className="comics__grid">
-                {comics}
+                <TransitionGroup component={null}>
+                    {comics}
+                </TransitionGroup>
             </ul>
         );
     }

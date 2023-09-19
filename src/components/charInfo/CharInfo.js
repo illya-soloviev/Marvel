@@ -47,7 +47,7 @@ const CharInfo = (props) => {
 }
 
 const View = ({characterInfo}) => {
-    const {name, description, thumbnail, homepage, wiki, comics} = characterInfo;
+    const {name, description, thumbnail, id, comics} = characterInfo;
     let imgStyle = {'objectFit' : 'cover'};
     if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
         imgStyle = {'objectFit' : 'unset'};
@@ -75,12 +75,12 @@ const View = ({characterInfo}) => {
                 <div>
                     <div className="char__info-name">{name}</div>
                     <div className="char__btns">
-                        <a href={homepage} className="button button__main">
+                        <Link to={`/characters/${id}`} className="button button__main">
                             <div className="inner">homepage</div>
-                        </a>
-                        <a href={wiki} className="button button__secondary">
+                        </Link>
+                        {/* <a href={wiki} className="button button__secondary">
                             <div className="inner">Wiki</div>
-                        </a>
+                        </a> */}
                     </div>
                 </div>
             </div>
