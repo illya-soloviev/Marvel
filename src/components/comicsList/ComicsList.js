@@ -7,13 +7,32 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import './comicsList.scss';
 
+const setContent = (process, Component, newComicsLoading) => {
+    switch(process) {
+        case 'waiting':
+            return <Spinner/>;
+            break;
+        case 'loading':
+            return newComicsLoading ? <Component/> : <Spinner/>;
+            break;
+        case 'confirmed':
+            return <Component/>;
+            break;
+        case 'error':
+            return <ErrorMessage/>;
+            break;
+        default:
+            throw new Error('Unexpected process value');
+    }
+}
+
 const ComicsList = () => {
     const [comicsList, setComicsList] = useState([]);
     const [offset, setOffset] = useState(0);
     const [newComicsLoading, setNewComicsLoading] = useState(false);
     const [comicsEnded, setComicsEnded] = useState(false);
     
-    const {loading, error, getAllComics} = useMarvelService();
+    const {getAllComics, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         onComicsRequest(offset, true);
@@ -24,6 +43,7 @@ const ComicsList = () => {
 
         getAllComics(offset)
             .then(onComicsListLoaded)
+            .then(() => setProcess('confirmed'));
     }
 
     const onComicsListLoaded = (newComicsList) => {
@@ -69,16 +89,9 @@ const ComicsList = () => {
         );
     }
 
-    const comics = renderComics(comicsList);
-
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading && !newComicsLoading ? <Spinner/> : null;
-
     return (
         <div className="comics__list">
-            {errorMessage}
-            {spinner}
-            {comics}
+            {setContent(process, () => renderComics(comicsList), newComicsLoading)}
             <button className="button button__main button__long"
                     disabled={newComicsLoading}
                     style={{'display': comicsEnded ? 'none' : 'block'}}

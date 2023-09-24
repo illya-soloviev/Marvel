@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import useMarvelService from '../../services/MarvelService';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
+import setContent from '../../utils/setContent';
+import useMarvelService from '../../services/MarvelService';
 
 import './randomChar.scss';
 
@@ -10,7 +9,7 @@ import mjolnir from '../../resources/img/mjolnir.png';
 
 const RandomChar = () => {
     const [characterInfo, setCharacterInfo] = useState({});
-    const {loading, error, getCharacter, clearError} = useMarvelService();
+    const {getCharacter, clearError, process, setProcess} = useMarvelService();
     
     useEffect(() => {
         updateCharacter();
@@ -27,21 +26,16 @@ const RandomChar = () => {
         clearError();
         getCharacter(id)
             .then(onCharacterLoaded)
+            .then(() => setProcess('confirmed'));
     }
 
     const onCharacterLoaded = (characterInfo) => {
         setCharacterInfo(characterInfo);
     }
 
-    const spinner = loading ? <Spinner/> : null;
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const content = !(loading || error) ? <View characterInfo={characterInfo}/> : null;
-
     return (
         <div className="randomchar">
-            {spinner}
-            {errorMessage}
-            {content}
+            {setContent(process, View, characterInfo)}
             <div className="randomchar__static">
                 <p className="randomchar__title">
                     Random character for today!<br/>
@@ -59,8 +53,8 @@ const RandomChar = () => {
     )
 }
 
-const View = ({characterInfo}) => {
-    const {name, description, thumbnail, id} = characterInfo;
+const View = ({data}) => {
+    const {name, description, thumbnail, id} = data;
     let imgStyle = {'objectFit' : 'cover'};
     if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
         imgStyle = {'objectFit' : 'contain'};
