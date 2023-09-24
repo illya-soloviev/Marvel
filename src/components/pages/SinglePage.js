@@ -11,7 +11,8 @@ const SinglePage = ({Component, dataType}) => {
         const {getComic, getCharacter, clearError, process, setProcess} = useMarvelService();
 
         useEffect(() => {
-            updateData()
+            updateData();
+            // eslint-disable-next-line
         }, [id])
 
         const updateData = () => {
@@ -23,16 +24,15 @@ const SinglePage = ({Component, dataType}) => {
                     break;
                 case 'character':
                     getCharacter(id).then(onDataLoaded).then(() => setProcess('confirmed'));
+                    break;
+                default:
+                    throw new Error('Unexpected dataType value');
             }
         }
 
         const onDataLoaded = (data) => {
             setData(data);
         }
-
-        // const errorMessage = error ? <ErrorMessage/> : null;
-        // const spinner = loading ? <Spinner/> : null;
-        // const content = !(loading || error || !data) ? <Component data={data}/> : null;
 
         return (
             <>
