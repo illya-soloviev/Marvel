@@ -13,7 +13,7 @@ const SinglePage = lazy(() => import('../pages/SinglePage'));
 
 const App = () => {
     return (
-        <HashRouter basename={process.env.PUBLIC_URL}>
+        <Router>
             <div className="app">
                 <AppHeader/>
                 <main>
@@ -38,7 +38,7 @@ const App = () => {
                     </Suspense>
                 </main>
             </div>
-        </HashRouter>
+        </Router>
     )
 }
 
